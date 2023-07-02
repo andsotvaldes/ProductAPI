@@ -1,46 +1,69 @@
-# Symfony Docker
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework, with full [HTTP/2](https://symfony.com/doc/current/weblink.html), HTTP/3 and HTTPS support.
+# Product API
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+Se ha realizado la implementacion del proyecto Producto API, con ella se quiere gestionar los productos de la aplicacion para poder listarlos y crearlos.
 
-## Getting Started
+Para este proyecto se ha realizado con el docker ya preparado de [Symfony Docker](https://github.com/dunglas/symfony-docker)
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up` (the logs will be displayed in the current shell)
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+Se ha usado los bundles:
+* [NelmioApiDocBundle](https://symfony.com/bundles/NelmioApiDocBundle/current/index.html) -> Para poder generar la documentacion de la API
+* [LexikJWTAuthenticationBundle](https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html) -> Para gestionar el token JWT, autentificacion y seguridad del sistema
 
-## Features
+Se ha usado una arquitectura hexagonal , donde se ha definido una estructura de ficheros propia de esta arquitectura.
 
-* Production, development and CI ready
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and in prod!)
-* HTTP/2, HTTP/3 and [Preload](https://symfony.com/doc/current/web_link.html) support
-* Built-in [Mercure](https://symfony.com/doc/current/mercure.html) hub
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Just 2 services (PHP FPM and Caddy server)
-* Super-readable configuration
+En el modelo del sistema se ha definido:
+* Producto
+* Usuario - Usuario para poder acceder a la aplicacion.
 
-**Enjoy!**
+Se ha definido un Usuario por defecto como:
+```
+username: "admin@admin.com"
+password: "admin@admin.com"
+```
+Se ha definido los repositorios del modelo y los repositorios de persistencia de cada modelo.
 
-## Docs
+Se ha definido cada caso de uso de la aplicacion, seria los casos de uso de listado y creado de Producto
 
-1. [Build options](docs/build.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using a Makefile](docs/makefile.md)
-8. [Troubleshooting](docs/troubleshooting.md)
+Para poder gestionar mejor el creado de producto , tambien se ha definido un Formulario
+Para poder gestionar mejor el listado de producto, se ha creado un Filtro
 
-## License
+Por seguridad , he añadido un Evento para cada vez que recibe una llamada en el controlador compruebe si en la cabecera contiene 'Content-type: application/json'
 
-Symfony Docker is available under the MIT License.
+He definido los controladores con las rutas:
+* v1/products GET -> Donde se pueden listar los productos del sistema , se puede añadir filtros
+* v1/product POST -> Donde se pueden crear producto
+* v1/login POST -> Llamada interna del bundle de LexikJWTAuthenticationBundle
 
-## Credits
+Para poder acceder a la documentacion de la API se ha usado Swagger para poder generarlo automaticamente.
+```
+https://localhost/api/doc
+```
+En el testing , se ha creado clases Fixture para poder hacer el volcado de datos. Se han realizado los test de cada llamada.
 
-Created by [Kévin Dunglas](https://dunglas.fr), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+# Requisitos previos
+* Docker
+* docker-compose
+
+# Instalacion
+Para poder instalar el proyectos solo hay que entrar en la raiz del proyectos y ejecutar la siguiente sentencia:
+```
+docker-compose up -d
+```
+Y ya podrias acceder a traves de:
+```
+https://localhost
+```
+
+# Testing
+Para ejecutar los testing se ha preparado para ejecutar en una nueva base de datos, para poder hacer esto hay que ejecutar estos 3 comandos para iniciarla y volcar los datos de prueba.
+
+```
+php bin/console --env=test doctrine:database:create
+php bin/console --env=test doctrine:schema:create
+php bin/console --env=test doctrine:fixtures:load
+```
+Con estos comandos ejecutados podemos ver los test
+
+```
+php bin/phpunit
+```

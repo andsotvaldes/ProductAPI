@@ -1,0 +1,8 @@
+controllers:
+    resource:
+        path: ../src/Presentation/Controllers/
+        namespace: App\Presentation\Controllers
+    type: attribute
+    
+api_login_check:
+    path: /v1/login
