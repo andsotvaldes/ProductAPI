@@ -49,10 +49,17 @@ Para poder instalar el proyectos solo hay que entrar en la raiz del proyectos y 
 ```
 docker-compose up -d
 ```
+Y por seguridad se debe de crear las claves para generar el token JWT , ejecutando el siguiente comando
+
+```
+php bin/console lexik:jwt:generate-keypair
+```
+
 Y ya podrias acceder a traves de:
 ```
 https://localhost
 ```
+
 
 # Testing
 Para ejecutar los testing se ha preparado para ejecutar en una nueva base de datos, para poder hacer esto hay que ejecutar estos 3 comandos para iniciarla y volcar los datos de prueba.
